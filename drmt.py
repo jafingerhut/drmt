@@ -3,7 +3,6 @@ import numpy as np
 import collections
 import importlib
 import math
-from sets import Set
 from schedule_dag import ScheduleDAG
 from printers import *
 from solution import Solution
@@ -176,9 +175,9 @@ class DrmtScheduleSolver:
           self.match_key_usage[t]     = 0
           self.action_fields_usage[t] = 0
           self.match_units_usage[t]   = 0
-          self.match_proc_set[t]      = Set()
+          self.match_proc_set[t]      = set()
           self.match_proc_usage[t]    = 0
-          self.action_proc_set[t]     = Set()
+          self.action_proc_set[t]     = set()
           self.action_proc_usage[t]   = 0
 
         for v in self.G.nodes():

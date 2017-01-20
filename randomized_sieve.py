@@ -2,7 +2,7 @@ from random import shuffle
 import time as tm
 import numpy as np
 import math
-import Queue
+from multiprocessing import Queue
 
 def random_topological_sort_recursive(dag):
   # This is basically taken from networkx's topological_sort_recursive.
@@ -367,12 +367,12 @@ def greedy_find_initial_solution(input_spec, dag, time_limit):
   index = 0 
 
   nodes = dag.number_of_nodes() 
-  print 'Looking for greedy feasible solution for %d seconds' % time_limit 
+  print ('Looking for greedy feasible solution for %d seconds' % time_limit)
   second_counter = 0            
   
   while curr_time - star_time < time_limit:
       if second_counter < curr_time - star_time:
-          print second_counter,
+          print (second_counter,)
           second_counter += 1
       schedule = index_dag_sieve(input_spec, dag, index%nodes, 2*delay)
       index += 1
@@ -382,9 +382,9 @@ def greedy_find_initial_solution(input_spec, dag, time_limit):
           if max_val - min_val < best:
               best = max_val - min_val
               best_schedule = schedule
-              print '\n'
-              print 'Found Feasible Solution With Latency', best
-              print '\n'
+              print ('\n')
+              print ('Found Feasible Solution With Latency', best)
+              print ('\n')
               
       curr_time = tm.time()
   if (best_schedule == None):
