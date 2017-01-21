@@ -2,7 +2,7 @@ from random import shuffle
 import time as tm
 import numpy as np
 import math
-from multiprocessing import Queue
+import queue
 
 def random_topological_sort_recursive(dag):
   # This is basically taken from networkx's topological_sort_recursive.
@@ -10,8 +10,8 @@ def random_topological_sort_recursive(dag):
   # 1. Randomization of the order we explore node's sucsessors.
   # 2. Removed cycle detection checks.
   def _dfs(v):
-    keys=dag[v].keys()
-    shuffle(keys)
+    keys=list(dag[v].keys())
+    shuffle(list(keys))
     for w in keys:   
         if w not in explored:
             _dfs(w)
@@ -72,8 +72,8 @@ def index_dag_sieve(input_spec, dag, index, bound, period_duration):
   ts = random_topological_sort_recursive(dag) 
       
 
-  ts_ff_queue = Queue.Queue()
-  ts_rw_queue = Queue.Queue()
+  ts_ff_queue = queue.Queue()
+  ts_rw_queue = queue.Queue()
           
   for i in ts[index:]:
       ts_ff_queue.put(i)
