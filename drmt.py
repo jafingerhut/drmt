@@ -196,13 +196,12 @@ class DrmtScheduleSolver:
 if __name__ == "__main__":
   # Cmd line args
   if (len(sys.argv) != 5):
-    print ("Usage: ", sys.argv[0], " <DAG file> <HW file> <yes to prime ILP> <# processors>")
+    print ("Usage: ", sys.argv[0], " <DAG file> <HW file> <# processors>")
     exit(1)
   elif (len(sys.argv) == 5):
     input_file = sys.argv[1]
     hw_file = sys.argv[2]
-    seed_prmt_fine = bool(sys.argv[3] == "yes")
-    num_proc = int(sys.argv[4])
+    num_procs = int(sys.argv[3])
 
   # Input specification
   input_spec = importlib.import_module(input_file, "*")
