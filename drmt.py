@@ -223,7 +223,7 @@ if __name__ == "__main__":
   cpath, cplat = G.critical_path()
 
   print ('{:*^80}'.format(' Input DAG '))
-  print_problem(G, input_spec)
+  upper_bound = print_problem(G, input_spec)
   print ('\n\n')
 
   print ('{:*^80}'.format(' Scheduling DRMT '))
