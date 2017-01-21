@@ -10,11 +10,12 @@ from prmt import PrmtFineSolver
 from sieve_rotator import *
 
 class DrmtScheduleSolver:
-    def __init__(self, dag, input_spec, seed_prmt_fine, period_duration):
+    def __init__(self, dag, input_spec, seed_prmt_fine, period_duration, minute_limit):
         self.G = dag
         self.input_spec = input_spec
         self.seed_prmt_fine = seed_prmt_fine
         self.period_duration = period_duration
+        self.minute_limit    = minute_limit
 
     def solve(self):
         """ Returns the optimal schedule
@@ -133,12 +134,16 @@ class DrmtScheduleSolver:
             t[i].start = init_drmt_schedule[i]
 
         # Solve model
+        m.setParam('TimeLimit', self.minute_limit * 60)
         m.optimize()
         ret = m.Status
 
         print ('Return code is ', ret)
-        if ((ret == GRB.INFEASIBLE) or (ret == GRB.TIME_LIMIT) or (ret == GRB.INTERRUPTED)):
+        if (ret == GRB.INFEASIBLE):
           return None
+        elif ((ret == GRB.TIME_LIMIT) or (ret == GRB.INTERRUPTED)):
+          if (m.SolCount == 0):
+            return None
 
         # Construct and return schedule
         self.time_of_op = {}
@@ -201,13 +206,14 @@ class DrmtScheduleSolver:
 
 if __name__ == "__main__":
   # Cmd line args
-  if (len(sys.argv) != 4):
-    print ("Usage: ", sys.argv[0], " <DAG file> <HW file> <# processors>")
+  if (len(sys.argv) != 5):
+    print ("Usage: ", sys.argv[0], " <DAG file> <HW file> <# processors> <time limit in mins>")
     exit(1)
-  elif (len(sys.argv) == 4):
+  elif (len(sys.argv) == 5):
     input_file = sys.argv[1]
     hw_file = sys.argv[2]
     num_procs = int(sys.argv[3])
+    minute_limit = int(sys.argv[4])
 
   # Input specification
   input_spec = importlib.import_module(input_file, "*")
@@ -244,7 +250,7 @@ if __name__ == "__main__":
     period = int(math.ceil((low + high)/2.0))
     print ('period =', period, ' cycles')
     print ('{:*^80}'.format(' Scheduling DRMT '))
-    solver = DrmtScheduleSolver(G, input_spec, seed_prmt_fine = False, period_duration = period)
+    solver = DrmtScheduleSolver(G, input_spec, seed_prmt_fine = False, period_duration = period, minute_limit = minute_limit)
     solution = solver.solve()
     if (solution):
       last_good_period   = period
@@ -256,7 +262,7 @@ if __name__ == "__main__":
     print ("Best throughput so far is below ", tpt_lower_bound, " packets/cycle.")
     exit(1)
 
-  print ('Best achieved throughput = %f packets / cycle' % num_procs / last_good_period)
+  print ('Best achieved throughput = %f packets / cycle' % (num_procs / last_good_period))
   print ('Schedule length (thread count) = %d cycles' % last_good_solution.length)
   print ('Critical path length = %d cycles' % cplat)
 
