@@ -204,6 +204,11 @@ if __name__ == "__main__":
 
   # Input example
   input_spec = importlib.import_module(input_file, "*")
+  # Hard code number of packets that can be concurrently matched/acted upon
+  # Right now, this makes sense only for dRMT,
+  # because we haven't found a way to capture this for PRMT
+  input_spec.action_proc_limit = 1
+  input_spec.match_proc_limit  = 1
 
   # Derive period_duration from num_procs and throughput
   period_duration = int(math.ceil((1.0 * input_spec.num_procs) / input_spec.throughput))
